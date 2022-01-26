@@ -1,5 +1,5 @@
 # Shiny App for Google Trends
-- The dataset was taken from Kaggle and is called "Google Trends Dataset"
+- The dataset is called "Google Trends Dataset" and was taken from Kaggle.
 - This shiny app shows the most popular online Google searches from 2012 -2020 in categories of People, TV Shows, Movies, Searches, and Athletes.
 - The data is separated to show the popular global searches and in specific locations such as United States, Canada, and United Kingdom.
 - The pie chart shows the five most searched terms specified by your choices of location, year and category.
