@@ -1,0 +1,91 @@
+---
+title: "Data-Scientific Programming: Shiny Apps"
+author: "Aiastan Sherniiazov"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(shiny)
+library(RColorBrewer)
+library(ECharts2Shiny)
+myPalette <- brewer.pal(5, "Set2") 
+```
+
+```{r}
+trends <- read.csv("trends.csv")
+trends$rank[trends$rank == 1] <- 10
+trends$rank[trends$rank == 2] <- 8
+trends$rank[trends$rank == 3] <- 6
+trends$rank[trends$rank == 4] <- 4
+trends$rank[trends$rank == 5] <- 2
+trends_1 <-trends %>% rename(popularity = rank)
+```
+
+
+```{r}
+ui <- fluidPage(
+   
+   # Application title
+   titlePanel("Google Trends from 2012 - 2020"),
+   
+   # Sidebar with a slider input for number of bins 
+   sidebarLayout(
+      sidebarPanel(
+          selectInput("location",         #data 
+                              h3("Select Location(s)"),  #text that user will see
+                              choices = list("Global" = "Global", 
+                                             "United States" = "United States", 
+                                             "Canada" = "Canada",
+                                             "United Kingdom" = "United Kingdom"),
+                              selected = "Global"),
+          sliderInput("years",
+                     "Year:",
+                     min = 2012,
+                     max = 2020,
+                     value = 2012),
+           selectInput("cat",         #data 
+                              h3("Select Category"),  #text that user will see
+                              choices = list("People" = "People", 
+                                             "TV Shows" = "TV Shows", 
+                                             "Searches" = "Searches",
+                                             "Athletes" = "Athletes",
+                                             "Movies" = "Movies"),
+                              selected = "People"),
+      ),
+   
+      mainPanel(
+        loadEChartsLibrary(),
+
+  tags$div(id="test", style="width:90%;height:550px;"),
+  deliverChart(div_id = "test"),
+         plotOutput("plot")
+      )
+   )
+)
+
+server <- function(input, output) {
+   
+   output$plot <- renderPlot({
+    loc <- input$location
+    years <- input$years
+    cat <- input$cat
+  
+    # draw the piechart 
+    df_1 <- trends_1 %>% filter(location == loc, year == years, category == cat) %>% select(query, popularity) %>% rename("name" = "query", "value" = "popularity")
+    renderPieChart(div_id = "test",theme = "shine", data = df_1)
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
+
+
+
+
